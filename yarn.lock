@@ -2295,6 +2295,20 @@
   resolved "https://registry.yarnpkg.com/@theia/monaco-editor-core/-/monaco-editor-core-1.72.3.tgz#911d674c6e0c490442a355cfaa52beec919a025e"
   integrity sha512-2FK5m0G5oxiqCv0ZrjucMx5fVgQ9Jqv0CgxGvSzDc4wRrauBdeBoX90J99BEIOJ8Jp3W0++GoRBdh0yQNIGL2g==
 
+"@theia/search-in-workspace@1.34.0":
+  version "1.34.0"
+  resolved "https://registry.yarnpkg.com/@theia/search-in-workspace/-/search-in-workspace-1.34.0.tgz#59050fa4f48b2e043675f4cb9e521fca09c68c12"
+  integrity sha512-RIK17iZihvH6f+QdWnzg2rOzKLfsK1h35DWlHdjeEOnRPKxkNbShYAthisoSrPyy+cPMqLuCVel3tKPVspyFHA==
+  dependencies:
+    "@theia/core" "1.34.0"
+    "@theia/editor" "1.34.0"
+    "@theia/filesystem" "1.34.0"
+    "@theia/navigator" "1.34.0"
+    "@theia/process" "1.34.0"
+    "@theia/workspace" "1.34.0"
+    "@vscode/ripgrep" "^1.14.2"
+    minimatch "^5.1.0"
+
 "@tootallnate/once@1", "@tootallnate/once@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"

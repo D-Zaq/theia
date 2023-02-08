@@ -114,6 +114,9 @@ import { isString, isObject, PickOptions, QuickInputButtonHandle } from '@theia/
 import { Severity } from '@theia/core/lib/common/severity';
 import { DebugConfiguration, DebugSessionOptions } from '@theia/debug/lib/common/debug-configuration';
 
+// import { CoverageDetails, IFileCoverage, ISerializedTestResults, RunTestForControllerRequest, TestsDiffOp, } from '@theia/core/lib/common/test-types';
+import { CoverageDetails, IFileCoverage, ISerializedTestResults, RunTestForControllerRequest, TestsDiffOp, } from './test-types';
+
 export interface PreferenceData {
     [scope: number]: any;
 }
@@ -2065,25 +2068,25 @@ export const enum TestingResourceExt {
 }
 
 export interface TestingExt {
-    // $runControllerTests(req: RunTestForControllerRequest[], token: CancellationToken): Promise<{ error?: string }[]>;
-    // $cancelExtensionTestRun(runId: string | undefined): void;
-    // /** Handles a diff of tests, as a result of a subscribeToDiffs() call */
-    // $acceptDiff(diff: TestsDiffOp.Serialized[]): void;
-    // /** Publishes that a test run finished. */
-    // $publishTestResults(results: ISerializedTestResults[]): void;
-    // /** Expands a test item's children, by the given number of levels. */
-    // $expandTest(testId: string, levels: number): Promise<void>;
-    // /** Requests file coverage for a test run. Errors if not available. */
-    // $provideFileCoverage(runId: string, taskId: string, token: CancellationToken): Promise<Dto<IFileCoverage[]>>;
-    // /**
-    //  * Requests coverage details for the file index in coverage data for the run.
-    //  * Requires file coverage to have been previously requested via $provideFileCoverage.
-    //  */
-    // $resolveFileCoverage(runId: string, taskId: string, fileIndex: number, token: CancellationToken): Promise<CoverageDetails[]>;
-    // /** Configures a test run config. */
-    // $configureRunProfile(controllerId: string, configId: number): void;
-    // /** Asks the controller to refresh its tests */
-    // $refreshTests(controllerId: string, token: CancellationToken): Promise<void>;
+    $runControllerTests(req: RunTestForControllerRequest[], token: CancellationToken): Promise<{ error?: string }[]>;
+    $cancelExtensionTestRun(runId: string | undefined): void;
+    /** Handles a diff of tests, as a result of a subscribeToDiffs() call */
+    $acceptDiff(diff: TestsDiffOp.Serialized[]): void;
+    /** Publishes that a test run finished. */
+    $publishTestResults(results: ISerializedTestResults[]): void;
+    /** Expands a test item's children, by the given number of levels. */
+    $expandTest(testId: string, levels: number): Promise<void>;
+    /** Requests file coverage for a test run. Errors if not available. */
+    $provideFileCoverage(runId: string, taskId: string, token: CancellationToken): Promise<IFileCoverage[]>;
+    /**
+     * Requests coverage details for the file index in coverage data for the run.
+     * Requires file coverage to have been previously requested via $provideFileCoverage.
+     */
+    $resolveFileCoverage(runId: string, taskId: string, fileIndex: number, token: CancellationToken): Promise<CoverageDetails[]>;
+    /** Configures a test run config. */
+    $configureRunProfile(controllerId: string, configId: number): void;
+    /** Asks the controller to refresh its tests */
+    $refreshTests(controllerId: string, token: CancellationToken): Promise<void>;
 }
 
 export interface TestingMain {
@@ -2174,7 +2177,7 @@ export const PLUGIN_RPC_CONTEXT = {
     THEMING_MAIN: <ProxyIdentifier<ThemingMain>>createProxyIdentifier<ThemingMain>('ThemingMain'),
     COMMENTS_MAIN: <ProxyIdentifier<CommentsMain>>createProxyIdentifier<CommentsMain>('CommentsMain'),
     TABS_MAIN: <ProxyIdentifier<TabsMain>>createProxyIdentifier<TabsMain>('TabsMain'),
-    TESTING_EXT: createProxyIdentifier<TestingMain>('TestingMain')
+    TESTING_MAIN: createProxyIdentifier<TestingMain>('TestingMain')
 };
 
 export const MAIN_RPC_CONTEXT = {

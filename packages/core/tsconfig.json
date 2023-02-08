@@ -7,7 +7,9 @@
     "baseUrl": "."
   },
   "include": [
-    "src"
+    "src",
+    "src/common/test-types.ts",
+    "src/common/test-types.ts"
   ],
   "references": [
     {

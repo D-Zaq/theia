@@ -11,21 +11,6 @@
   "references": [
     {
       "path": "../core"
-    },
-    {
-      "path": "../editor"
-    },
-    {
-      "path": "../filesystem"
-    },
-    {
-      "path": "../navigator"
-    },
-    {
-      "path": "../process"
-    },
-    {
-      "path": "../workspace"
     }
   ]
 }

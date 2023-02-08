@@ -82,6 +82,10 @@ export const createTestItem = (
     id: string,
     label: string,
     uri?: theia.Uri
+    // /** Handles a diff of tests, as a result of a subscribeToDiffs() call */
+    // $acceptDiff(diff: TestsDiffOp.Serialized[]): void;
+    // /** Publishes that a test run finished. */
+    // $publishTestResults(results: ISerializedTestR
 ): theia.TestItem => ({
     id,
     label,
