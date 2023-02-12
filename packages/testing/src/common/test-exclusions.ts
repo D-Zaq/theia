@@ -9,8 +9,8 @@ import { Event } from '@theia/monaco-editor-core/esm/vs/base/common/event';
 import { Iterable } from '@theia/monaco-editor-core/esm/vs/base/common/iterator';
 import { Disposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import { IStorageService, StorageScope, StorageTarget } from '@theia/monaco-editor-core/esm/vs/platform/storage/common/storage';
-import { MutableObservableValue } from './observableValue';
-import { StoredValue } from './storedValue';
+import { MutableObservableValue } from './observable-value';
+import { StoredValue } from './stored-value';
 import { InternalTestItem } from './test-types';
 
 export class TestExclusions extends Disposable {

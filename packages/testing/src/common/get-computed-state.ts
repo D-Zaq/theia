@@ -7,7 +7,7 @@
 
 import { Iterable } from '@theia/monaco-editor-core/esm/vs/base/common/iterator';
 import { TestResultState } from './test-types';
-import { maxPriority, statePriority } from './testingStates';
+import { maxPriority, statePriority } from './testing-states';
 
 /**
  * Accessor for nodes in get and refresh computed state.

@@ -10,12 +10,12 @@ import { isDefined } from '@theia/monaco-editor-core/esm/vs/base/common/types';
 import { IContextKey, IContextKeyService } from '@theia/monaco-editor-core/esm/vs/platform/contextkey/common/contextkey';
 import { createDecorator } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope, StorageTarget } from '@theia/monaco-editor-core/esm/vs/platform/storage/common/storage';
-import { StoredValue } from './storedValue';
+import { StoredValue } from './stored-value';
 import { InternalTestItem, ITestRunProfile, TestRunProfileBitset, testRunProfileBitsetList } from './test-types';
-import { TestId } from './testId';
-import { TestingContextKeys } from './testingContextKeys';
+import { TestId } from './test-id';
+import { TestingContextKeys } from './testing-context-keys';
 
-import { IMainThreadTestController } from './testService';
+import { IMainThreadTestController } from './test-service';
 
 export const ITestProfileService = createDecorator<ITestProfileService>('testProfileService');
 

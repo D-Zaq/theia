@@ -1,8 +1,23 @@
-// /*---------------------------------------------------------------------------------------------
-//  *  Copyright (c) Microsoft Corporation. All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*/
+// *****************************************************************************
+// Copyright (C) 2022 Ericsson and others.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Eclipse Public License v. 2.0 which is available at
+// http://www.eclipse.org/legal/epl-2.0.
+//
+// This Source Code may also be made available under the following Secondary
+// Licenses when the conditions for such availability set forth in the Eclipse
+// Public License v. 2.0 are satisfied: GNU General Public License, version 2
+// with the GNU Classpath Exception which is available at
+// https://www.gnu.org/software/classpath/license.html.
+//
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+// *****************************************************************************
 
+/* tslint:disable:typedef */
+
+import { CancellationToken } from '@theia/core/lib/common/cancellation';
+import type * as theia from '@theia/plugin';
 // import { mapFind } from 'vs/base/common/arrays';
 // import { VSBuffer } from 'vs/base/common/buffer';
 // import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
@@ -18,7 +33,7 @@
 // import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 // import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 // import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
-// import { ExtHostTestItemCollection, TestItemImpl, TestItemRootImpl, toItemFromContext } from 'vs/workbench/api/common/extHostTestItem';
+import { ExtHostTestItemCollection, TestItemImpl, TestItemRootImpl, toItemFromContext } from './test-item';
 // import * as Convert from 'vs/workbench/api/common/extHostTypeConverters';
 // import { TestRunProfileKind, TestRunRequest } from 'vs/workbench/api/common/extHostTypes';
 // import { TestId, TestIdPathParts, TestPosition } from 'vs/workbench/contrib/testing/common/testId';
@@ -26,11 +41,20 @@
 // import { AbstractIncrementalTestCollection, CoverageDetails, IFileCoverage, IncrementalChangeCollector, IncrementalTestCollectionItem, InternalTestItem, ISerializedTestResults, ITestItem, RunTestForControllerRequest, RunTestForControllerResult, TestResultState, TestRunProfileBitset, TestsDiff, TestsDiffOp } from 'vs/workbench/contrib/testing/common/testTypes';
 // import type * as vscode from 'vscode';
 
-// interface ControllerInfo {
-// 	controller: vscode.TestController;
-// 	profiles: Map<number, vscode.TestRunProfile>;
-// 	collection: ExtHostTestItemCollection;
-// }
+
+
+// /*---------------------------------------------------------------------------------------------
+//  *  Copyright (c) Microsoft Corporation. All rights reserved.
+//  *  Licensed under the MIT License. See License.txt in the project root for license information.
+//  *--------------------------------------------------------------------------------------------*/
+// some code copied and modified from https://github.com/microsoft/vscode/blob/1.71.2/src/vs/workbench/api/common/extHostTesting.ts
+
+
+interface ControllerInfo {
+	controller: theia.TestController;
+	profiles: Map<number, theia.TestRunProfile>;
+	collection: ExtHostTestItemCollection;
+}
 
 // export class ExtHostTesting implements ExtHostTestingShape {
 // 	private readonly resultsChangedEmitter = new Emitter<void>();

@@ -13,11 +13,11 @@ import { MarshalledId } from '@theia/core/lib/common/marshalling-id'
 import { URI } from '@theia/monaco-editor-core/esm/vs/base/common/uri';
 import { createDecorator } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation'
 import { IUriIdentityService } from '@theia/monaco-editor-core/esm/vs/platform/uriIdentity/common/uriIdentity'
-import { IObservableValue, MutableObservableValue } from './observableValue';
+import { IObservableValue, MutableObservableValue } from './observable-value';
 import { AbstractIncrementalTestCollection, IncrementalTestCollectionItem, InternalTestItem, ITestItemContext, ResolvedTestRunRequest, RunTestForControllerRequest, RunTestForControllerResult, TestItemExpandState, TestRunProfileBitset, TestsDiff } from './test-types';
-import { TestExclusions } from './testExclusions';
-import { TestId } from './testId';
-import { ITestResult } from './testResult';
+import { TestExclusions } from './test-exclusions';
+import { TestId } from './test-id';
+import { ITestResult } from './test-result';
 
 export const ITestService = createDecorator<ITestService>('testService');
 

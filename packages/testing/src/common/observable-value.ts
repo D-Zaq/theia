@@ -7,7 +7,7 @@
 
 import { Emitter, Event } from '@theia/monaco-editor-core/esm/vs/base/common/event';
 import { Disposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
-import { StoredValue } from './storedValue';
+import { StoredValue } from './stored-value';
 
 export interface IObservableValue<T> {
 	onDidChange: Event<T>;

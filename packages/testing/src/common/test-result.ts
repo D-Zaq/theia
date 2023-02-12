@@ -11,11 +11,11 @@ import { Lazy } from '@theia/monaco-editor-core/esm/vs/base/common/lazy';
 import { DisposableStore } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import { URI } from '@theia/monaco-editor-core/esm/vs/base/common/uri';
 import { localize } from '@theia/monaco-editor-core/esm/vs/nls';
-import { IComputedStateAccessor, refreshComputedState } from './getComputedState';
-import { IObservableValue, MutableObservableValue, staticObservableValue } from './observableValue';
+import { IComputedStateAccessor, refreshComputedState } from './get-computed-state';
+import { IObservableValue, MutableObservableValue, staticObservableValue } from './observable-value';
 import { IRichLocation, ISerializedTestResults, ITestItem, ITestMessage, ITestOutputMessage, ITestRunTask, ITestTaskState, ResolvedTestRunRequest, TestItemExpandState, TestMessageType, TestResultItem, TestResultState } from './test-types';
-import { TestCoverage } from './testCoverage';
-import { maxPriority, statesInOrder, terminalStatePriorities } from './testingStates';
+import { TestCoverage } from './test-coverage';
+import { maxPriority, statesInOrder, terminalStatePriorities } from './testing-states';
 import { removeAnsiEscapeCodes } from '@theia/monaco-editor-core/esm/vs/base/common/strings';
 
 export interface ITestRunTaskResults extends ITestRunTask {
