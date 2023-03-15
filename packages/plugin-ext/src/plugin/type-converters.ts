@@ -27,12 +27,11 @@ import { MarkdownString as PluginMarkdownStringImpl } from './markdown-string';
 import * as types from './types-impl';
 import { UriComponents } from '../common/uri-components';
 import { isReadonlyArray } from '../common/arrays';
-import { MarkdownString as MarkdownStringDTO } from '@theia/core/lib/common/markdown-rendering';
+import { MarkdownString as MarkdownStringDTO, parseHrefAndDimensions } from '@theia/core/lib/common/markdown-rendering';
 import { isObject } from '@theia/core/lib/common';
-import * as editorRange from '@theia/monaco-editor-core/esm/vs/editor/editor.api';
+import * as RangeTest from '@theia/testing/lib/common/range';
 import { denamespaceTestTag, ITestErrorMessage, ITestItem, ITestTag, namespaceTestTag, TestMessageType } from '@theia/testing/lib/common/test-types';
 import { TestId } from '@theia/testing/lib/common/test-id';
-import * as htmlContent from '@theia/monaco-editor-core/esm/vs/base/common/htmlContent';
 import { getPrivateApiFor } from './testing-private-api';
 import { parse } from '@theia/monaco-editor-core/esm/vs/base/common/marshalling';
 import { cloneAndChange } from '@theia/monaco-editor-core/esm/vs/base/common/objects';
@@ -1411,9 +1410,9 @@ export interface RangeLike {
 export namespace Range {
 
     export function from(range: undefined): undefined;
-    export function from(range: RangeLike): editorRange.IRange;
-    export function from(range: RangeLike | undefined): editorRange.IRange | undefined;
-    export function from(range: RangeLike | undefined): editorRange.IRange | undefined {
+    export function from(range: RangeLike): RangeTest.IRange;
+    export function from(range: RangeLike | undefined): RangeTest.IRange | undefined;
+    export function from(range: RangeLike | undefined): RangeTest.IRange | undefined {
         if (!range) {
             return undefined;
         }
@@ -1427,9 +1426,9 @@ export namespace Range {
     }
 
     export function to(range: undefined): types.Range;
-    export function to(range: editorRange.IRange): types.Range;
-    export function to(range: editorRange.IRange | undefined): types.Range | undefined;
-    export function to(range: editorRange.IRange | undefined): types.Range | undefined {
+    export function to(range: RangeTest.IRange): types.Range;
+    export function to(range: RangeTest.IRange | undefined): types.Range | undefined;
+    export function to(range: RangeTest.IRange | undefined): types.Range | undefined {
         if (!range) {
             return undefined;
         }
@@ -1440,7 +1439,7 @@ export namespace Range {
 
 export namespace MarkdownString {
 
-    export function fromMany(markup: (theia.MarkdownString | theia.MarkedString)[]): htmlContent.IMarkdownString[] {
+    export function fromMany(markup: (theia.MarkdownString | theia.MarkedString)[]): MarkdownStringDTO[] {
         return markup.map(MarkdownString.from);
     }
 
@@ -1455,8 +1454,8 @@ export namespace MarkdownString {
     //         && typeof (<Codeblock>thing).value === 'string';
     // }
 
-    export function from(markup: theia.MarkdownString | theia.MarkedString): htmlContent.IMarkdownString {
-        let res: htmlContent.IMarkdownString;
+    export function from(markup: theia.MarkdownString | theia.MarkedString): MarkdownStringDTO {
+        let res: MarkdownStringDTO;
         if (isCodeblock(markup)) {
             const { language, value } = markup;
             res = { value: '```' + language + '\n' + value + '\n```\n' };
@@ -1484,7 +1483,7 @@ export namespace MarkdownString {
         };
         const renderer = new marked.Renderer();
         renderer.link = collectUri;
-        renderer.image = href => typeof href === 'string' ? collectUri(htmlContent.parseHrefAndDimensions(href).href) : '';
+        renderer.image = href => typeof href === 'string' ? collectUri(parseHrefAndDimensions(href).href) : '';
 
         marked.marked(res.value, { renderer });
 
@@ -1524,7 +1523,7 @@ export namespace MarkdownString {
         return JSON.stringify(data);
     }
 
-    export function to(value: htmlContent.IMarkdownString): theia.MarkdownString {
+    export function to(value: MarkdownStringDTO): theia.MarkdownString {
         const result = new PluginMarkdownStringImpl(value.value, value.supportThemeIcons);
         result.isTrusted = value.isTrusted;
         result.supportHtml = value.supportHtml;
@@ -1532,7 +1531,7 @@ export namespace MarkdownString {
         return result;
     }
 
-    export function fromStrict(value: string | theia.MarkdownString | undefined | undefined): undefined | string | htmlContent.IMarkdownString {
+    export function fromStrict(value: string | theia.MarkdownString | undefined | undefined): undefined | string | MarkdownStringDTO {
         if (!value) {
             return undefined;
         }
@@ -1599,7 +1598,7 @@ export namespace TestItem {
 
     export function from(item: theia.TestItem): ITestItem {
         const ctrlId = getPrivateApiFor(item).controllerId;
-        const rangeReturn = editorRange.Range.lift(Range.from(item.range));
+        const rangeReturn = RangeTest.Range.lift(Range.from(item.range));
         // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
         if (rangeReturn === null) {
             return getITestItem(item, ctrlId, undefined);
