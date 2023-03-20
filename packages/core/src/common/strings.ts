@@ -218,3 +218,12 @@ export function compareSubstringIgnoreCase(a: string, b: string, aStart: number 
 
     return 0;
 }
+
+export function regExpFlags(regexp: RegExp): string {
+    return (regexp.global ? 'g' : '')
+        + (regexp.ignoreCase ? 'i' : '')
+        + (regexp.multiline ? 'm' : '')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        + ((regexp as any /* standalone editor compilation */).unicode ? 'u' : '');
+}
+

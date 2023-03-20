@@ -190,7 +190,13 @@ import {
     TerminalEditorTabInput,
     TextDiffTabInput,
     TextMergeTabInput,
-    WebviewEditorTabInput
+    WebviewEditorTabInput,
+    TestResultState,
+    CoveredCount,
+    FileCoverage,
+    StatementCoverage,
+    BranchCoverage,
+    FunctionCoverage
 } from './types-impl';
 import { AuthenticationExtImpl } from './authentication-ext';
 import { SymbolKind } from '../common/plugin-api-rpc-model';
@@ -1308,7 +1314,13 @@ export function createAPIFactory(
             TabInputWebview: WebviewEditorTabInput,
             TabInputTerminal: TerminalEditorTabInput,
             TerminalLocation,
-            TerminalExitReason
+            TerminalExitReason,
+            TestResultState,
+            CoveredCount,
+            FileCoverage,
+            StatementCoverage,
+            BranchCoverage,
+            FunctionCoverage
         };
     };
 }

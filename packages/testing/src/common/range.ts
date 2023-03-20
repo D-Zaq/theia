@@ -1,7 +1,18 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+// *****************************************************************************
+// Copyright (C) 2023 Ericsson and others.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Eclipse Public License v. 2.0 which is available at
+// http://www.eclipse.org/legal/epl-2.0.
+//
+// This Source Code may also be made available under the following Secondary
+// Licenses when the conditions for such availability set forth in the Eclipse
+// Public License v. 2.0 are satisfied: GNU General Public License, version 2
+// with the GNU Classpath Exception which is available at
+// https://www.gnu.org/software/classpath/license.html.
+//
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+// *****************************************************************************
 
 import { IPosition, Position } from './position';
 
@@ -248,9 +259,11 @@ export class Range {
 
         // Check if selection is now empty
         if (resultStartLineNumber > resultEndLineNumber) {
+            // eslint-disable-next-line no-null/no-null
             return null;
         }
         if (resultStartLineNumber === resultEndLineNumber && resultStartColumn > resultEndColumn) {
+            // eslint-disable-next-line no-null/no-null
             return null;
         }
         return new Range(resultStartLineNumber, resultStartColumn, resultEndLineNumber, resultEndColumn);
@@ -361,6 +374,7 @@ export class Range {
     public static lift(range: IRange | undefined | null): Range | null;
     public static lift(range: IRange | undefined | null): Range | null {
         if (!range) {
+            // eslint-disable-next-line no-null/no-null
             return null;
         }
         return new Range(range.startLineNumber, range.startColumn, range.endLineNumber, range.endColumn);
@@ -369,6 +383,7 @@ export class Range {
     /**
      * Test if `obj` is an `IRange`.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static isIRange(obj: any): obj is IRange {
         return (
             obj

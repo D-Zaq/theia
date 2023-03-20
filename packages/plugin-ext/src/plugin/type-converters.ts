@@ -30,13 +30,27 @@ import { isReadonlyArray } from '../common/arrays';
 import { MarkdownString as MarkdownStringDTO, parseHrefAndDimensions } from '@theia/core/lib/common/markdown-rendering';
 import { isObject } from '@theia/core/lib/common';
 import * as RangeTest from '@theia/testing/lib/common/range';
-import { denamespaceTestTag, ITestErrorMessage, ITestItem, ITestTag, namespaceTestTag, TestMessageType } from '@theia/testing/lib/common/test-types';
-import { TestId } from '@theia/testing/lib/common/test-id';
+import {
+    denamespaceTestTag,
+    ITestErrorMessage,
+    ITestItem,
+    ITestTag,
+    namespaceTestTag,
+    TestMessageType,
+    TestResultItem,
+    ISerializedTestResults,
+    ICoveredCount,
+    CoverageDetails,
+    DetailType,
+    IFileCoverage
+} from '@theia/testing/lib/common/test-types';
+import { TestId, TestPosition } from '@theia/testing/lib/common/test-id';
 import { getPrivateApiFor } from './testing-private-api';
-import { parse } from '@theia/monaco-editor-core/esm/vs/base/common/marshalling';
-import { cloneAndChange } from '@theia/monaco-editor-core/esm/vs/base/common/objects';
+import { parse } from '@theia/testing/lib/common/marshalling';
+import { cloneAndChange } from '@theia/core/lib/common/objects';
 import * as languages from '@theia/monaco-editor-core/esm/vs/editor/common/languages';
 import { Location } from '../common/plugin-api-rpc-model';
+import { IPosition } from '@theia/testing/lib/common/position';
 import * as marked from 'marked';
 
 const SIDE_GROUP = -2;
@@ -1643,6 +1657,102 @@ export namespace TestTag {
 
     export function to(tag: ITestTag): theia.TestTag {
         return new types.TestTag(tag.id);
+    }
+}
+
+export namespace TestResults {
+    const convertTestResultItem = (item: TestResultItem.Serialized, byInternalId: Map<string, TestResultItem.Serialized>): theia.TestResultSnapshot => {
+        const children: TestResultItem.Serialized[] = [];
+        for (const [id, itemInternalId] of byInternalId) {
+            if (TestId.compare(itemInternalId.item.extId, id) === TestPosition.IsChild) {
+                byInternalId.delete(id);
+                children.push(itemInternalId);
+            }
+        }
+
+        const snapshot: theia.TestResultSnapshot = ({
+            ...TestItem.toPlain(item.item),
+            parent: undefined,
+            taskStates: item.tasks.map(t => ({
+                state: t.state as number as types.TestResultState,
+                duration: t.duration,
+                messages: t.messages
+                    .filter((m): m is ITestErrorMessage.Serialized => m.type === TestMessageType.Error)
+                    .map(TestMessage.to),
+            })),
+            children: children.map(c => convertTestResultItem(c, byInternalId))
+        });
+
+        for (const child of snapshot.children) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (child as any).parent = snapshot;
+        }
+
+        return snapshot;
+    };
+
+    export function to(serialized: ISerializedTestResults): theia.TestRunResult {
+        const roots: TestResultItem.Serialized[] = [];
+        const byInternalId = new Map<string, TestResultItem.Serialized>();
+        for (const item of serialized.items) {
+            byInternalId.set(item.item.extId, item);
+            if (serialized.request.targets.some(t => t.controllerId === item.controllerId && t.testIds.includes(item.item.extId))) {
+                roots.push(item);
+            }
+        }
+
+        return {
+            completedAt: serialized.completedAt,
+            results: roots.map(r => convertTestResultItem(r, byInternalId)),
+        };
+    }
+}
+
+export namespace PositionCoverage {
+    export function to(position: IPosition): types.Position {
+        return new types.Position(position.lineNumber - 1, position.column - 1);
+    }
+    export function from(position: types.Position | theia.Position): IPosition {
+        return { lineNumber: position.line + 1, column: position.character + 1 };
+    }
+}
+
+export namespace TestCoverage {
+    function fromCoveredCount(count: theia.CoveredCount): ICoveredCount {
+        return { covered: count.covered, total: count.covered };
+    }
+
+    function fromLocationCoverage(locationRange: theia.Range | theia.Position): RangeTest.IRange | IPosition {
+        return 'line' in locationRange ? PositionCoverage.from(locationRange) : Range.from(locationRange);
+    }
+
+    export function fromDetailed(coverage: theia.DetailedCoverage): CoverageDetails {
+        if ('branches' in coverage) {
+            return {
+                count: coverage.executionCount,
+                location: fromLocationCoverage(coverage.location),
+                type: DetailType.Statement,
+                branches: coverage.branches.length
+                    ? coverage.branches.map(b => ({ count: b.executionCount, location: b.location && fromLocationCoverage(b.location) }))
+                    : undefined,
+            };
+        } else {
+            return {
+                type: DetailType.Function,
+                count: coverage.executionCount,
+                location: fromLocationCoverage(coverage.location),
+            };
+        }
+    }
+
+    export function fromFile(coverage: theia.FileCoverage): IFileCoverage {
+        return {
+            uri: coverage.uri,
+            statement: fromCoveredCount(coverage.statementCoverage),
+            branch: coverage.branchCoverage && fromCoveredCount(coverage.branchCoverage),
+            function: coverage.functionCoverage && fromCoveredCount(coverage.functionCoverage),
+            details: coverage.detailedCoverage?.map(fromDetailed),
+        };
     }
 }
 // End of tests API additions

@@ -99,3 +99,18 @@ export function nullToUndefined<T>(nullable: MaybeNull<T>): MaybeUndefined<T> {
 export function unreachable(_never: never, message: string = 'unhandled case'): never {
     throw new Error(message);
 }
+
+/**
+ * @returns whether the provided parameter is defined.
+ */
+export function isDefined<T>(arg: T | null | undefined): arg is T {
+    return !isUndefinedOrNull(arg);
+}
+
+/**
+ * @returns whether the provided parameter is undefined or null.
+ */
+export function isUndefinedOrNull(obj: unknown): obj is undefined | null {
+    // eslint-disable-next-line no-null/no-null
+    return (isUndefined(obj) || obj === null);
+}
