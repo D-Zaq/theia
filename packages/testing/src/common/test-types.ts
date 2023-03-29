@@ -23,14 +23,11 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
 
-import {
-    IMarkdownString,
-    IPosition,
-    IRange,
-    Range,
-    Uri,
-    UriComponents
-} from '@theia/monaco-editor-core/esm/vs/editor/editor.api';
+import { IRange, Range } from './range';
+import { IPosition } from './position';
+import { URI as Uri } from '@theia/core/shared/vscode-uri';
+import { UriComponents } from '@theia/core/lib/common/uri';
+import { IMarkdownString } from '@theia/monaco-editor-core/esm/vs/base/common/htmlContent';
 import { MarshalledId } from './marshalling-ids';
 
 export const enum TestResultState {
