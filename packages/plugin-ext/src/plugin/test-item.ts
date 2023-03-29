@@ -17,12 +17,12 @@
 /* tslint:disable:typedef */
 
 import type * as theia from '@theia/plugin';
-import * as editorRange from '@theia/monaco-editor-core/esm/vs/editor/editor.api';
+import { Range as editorRange } from '@theia/testing/lib/common/range';
 import { createPrivateApiFor, getPrivateApiFor, IExtHostTestItemApi } from './testing-private-api';
 import { TestId, TestIdPathParts } from '@theia/testing/lib/common/test-id';
 import { denamespaceTestTag, ITestItem, ITestItemContext } from '@theia/testing/lib/common/test-types';
 import * as Convert from './type-converters';
-import { Uri } from '@theia/monaco-editor-core/esm/vs/editor/editor.api';
+import { URI as Uri } from '@theia/core/shared/vscode-uri';
 import {
     createTestItemChildren,
     ExtHostTestItemEvent,
@@ -107,7 +107,7 @@ function lift(rangeLiftReturn: any): any {
 const makePropDescriptors = (api: IExtHostTestItemApi, label: string): { [K in keyof Required<WritableProps>]: PropertyDescriptor } => ({
     range: (() => {
         let value: theia.Range | undefined;
-        const updateProps = evSetProps<theia.Range | undefined>(r => ({ range: lift(editorRange.Range.lift(Convert.Range.from(r))) }));
+        const updateProps = evSetProps<theia.Range | undefined>(r => ({ range: lift(editorRange.lift(Convert.Range.from(r))) }));
         return {
             enumerable: true,
             configurable: false,

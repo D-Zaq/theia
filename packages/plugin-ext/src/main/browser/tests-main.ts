@@ -1,11 +1,11 @@
 /* eslint-disable */
 
-// /*---------------------------------------------------------------------------------------------
-//  *  Copyright (c) Microsoft Corporation. All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-// // Based on https://github.com/microsoft/vscode/blob/1.72.2/src/vs/workbench/api/browser/mainThreadTesting.ts
+// Based on https://github.com/microsoft/vscode/blob/1.72.2/src/vs/workbench/api/browser/mainThreadTesting.ts
 
 // import { BinaryBuffer } from '@theia/core/lib/common/buffer';
 // import { CancellationToken } from '@theia/core/lib/common/cancellation'; // TODO: Test-api: Verify compatibility of namespace

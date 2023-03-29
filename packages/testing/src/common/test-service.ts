@@ -305,3 +305,20 @@ export interface ITestService {
      */
     publishDiff(controllerId: string, diff: TestsDiff): void;
 }
+
+export function once<T extends Function>(this: unknown, fn: T): T {
+    const _this = this;
+    let didCall = false;
+    let result: unknown;
+
+    return function (): unknown {
+        if (didCall) {
+            return result;
+        }
+
+        didCall = true;
+        result = fn.apply(_this, arguments);
+
+        return result;
+    } as unknown as T;
+}

@@ -646,6 +646,67 @@ export module '@theia/plugin' {
 
     // #region Tests API
 
+    export namespace tests {
+        /**
+         * Requests that tests be run by their controller.
+         * @param run Run options to use.
+         * @param token Cancellation token for the test run
+         */
+        export function runTests(run: TestRunRequest, token?: CancellationToken): Thenable<void>;
+
+        /**
+         * Returns an observer that watches and can request tests.
+         */
+        export function createTestObserver(): TestObserver;
+        /**
+         * List of test results stored by the editor, sorted in descending
+         * order by their `completedAt` time.
+         */
+        export const testResults: ReadonlyArray<TestRunResult>;
+
+        /**
+         * Event that fires when the {@link testResults} array is updated.
+         */
+        export const onDidChangeTestResults: Event<void>;
+    }
+
+    export interface TestObserver {
+        /**
+         * List of tests returned by test provider for files in the workspace.
+         */
+        readonly tests: ReadonlyArray<TestItem>;
+
+        /**
+         * An event that fires when an existing test in the collection changes, or
+         * null if a top-level test was added or removed. When fired, the consumer
+         * should check the test item and all its children for changes.
+         */
+        readonly onDidChangeTest: Event<TestsChangeEvent>;
+
+        /**
+         * Dispose of the observer, allowing the editor to eventually tell test
+         * providers that they no longer need to update tests.
+         */
+        dispose(): void;
+    }
+
+    export interface TestsChangeEvent {
+        /**
+         * List of all tests that are newly added.
+         */
+        readonly added: ReadonlyArray<TestItem>;
+
+        /**
+         * List of existing tests that have updated.
+         */
+        readonly updated: ReadonlyArray<TestItem>;
+
+        /**
+         * List of existing tests that have been removed.
+         */
+        readonly removed: ReadonlyArray<TestItem>;
+    }
+
     /**
      * TestResults can be provided to the editor in {@link tests.publishTestResult},
      * or read from it in {@link tests.testResults}.
@@ -947,43 +1008,6 @@ export module '@theia/plugin' {
     }
 
     export type DetailedCoverage = StatementCoverage | FunctionCoverage;
-
-    export interface TestsChangeEvent {
-        /**
-         * List of all tests that are newly added.
-         */
-        readonly added: ReadonlyArray<TestItem>;
-
-        /**
-         * List of existing tests that have updated.
-         */
-        readonly updated: ReadonlyArray<TestItem>;
-
-        /**
-         * List of existing tests that have been removed.
-         */
-        readonly removed: ReadonlyArray<TestItem>;
-    }
-
-    export interface TestObserver {
-        /**
-         * List of tests returned by test provider for files in the workspace.
-         */
-        readonly tests: ReadonlyArray<TestItem>;
-
-        /**
-         * An event that fires when an existing test in the collection changes, or
-         * null if a top-level test was added or removed. When fired, the consumer
-         * should check the test item and all its children for changes.
-         */
-        readonly onDidChangeTest: Event<TestsChangeEvent>;
-
-        /**
-         * Dispose of the observer, allowing the editor to eventually tell test
-         * providers that they no longer need to update tests.
-         */
-        dispose(): void;
-    }
 
     // #endregion
 }

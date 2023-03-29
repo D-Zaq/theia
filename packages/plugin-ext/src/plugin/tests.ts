@@ -16,14 +16,14 @@
 // // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
 // // *****************************************************************************
 
-// /* tslint:disable:typedef */
+/* tslint:disable:typedef */
 
 import type * as theia from '@theia/plugin';
 import { CancellationToken, CancellationTokenSource } from '@theia/core/lib/common/cancellation';
 import { mapFind } from '../common/arrays';
 import { VSBuffer } from '@theia/testing/lib/common/buffer';
 import { Emitter, Event } from '@theia/core';
-import { once } from '../main/browser/custom-editors/custom-editor-service';
+import { once } from '@theia/testing/lib/common/test-service';
 import { hash } from '@theia/core/lib/common/hash';
 
 import { Disposable, DisposableStore, toDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
