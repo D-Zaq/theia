@@ -93,6 +93,28 @@ export namespace ArrayUtils {
         return -(low + 1);
     }
 
+    /**
+     * Takes a sorted array and a function p. The array is sorted in such a way that all elements where p(x) is false
+     * are located before all elements where p(x) is true.
+     * @returns the least x for which p(x) is true or array.length if no element fullfills the given function.
+     */
+    export function findFirstInSorted<T>(array: ReadonlyArray<T>, p: (x: T) => boolean): number {
+        let low = 0;
+        let high = array.length;
+        if (high === 0) {
+            return 0; // no children
+        }
+        while (low < high) {
+            const mid = Math.floor((low + high) / 2);
+            if (p(array[mid])) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+
     export function partition<T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean | undefined): [T[], T[]] {
         const pass: T[] = [];
         const fail: T[] = [];
