@@ -60,6 +60,9 @@ import { UntitledResourceResolver } from '@theia/core/lib/common/resource';
 import { ThemeService } from '@theia/core/lib/browser/theming';
 import { TabsMainImpl } from './tabs/tabs-main';
 import { TestingMainImpl } from './tests-main';
+// import { ITestProfileService } from '@theia/testing/lib/common/test-profile-service';
+// import { ITestResultService } from '@theia/testing/lib/common/test-result-service';
+// import { ITestService } from '@theia/testing/lib/common/test-service';
 
 export function setUpPluginApi(rpc: RPCProtocol, container: interfaces.Container): void {
     const authenticationMain = new AuthenticationMainImpl(rpc, container);
@@ -186,6 +189,9 @@ export function setUpPluginApi(rpc: RPCProtocol, container: interfaces.Container
     const tabsMain = new TabsMainImpl(rpc, container);
     rpc.set(PLUGIN_RPC_CONTEXT.TABS_MAIN, tabsMain);
 
+    // const testService = container.get<ITestService>(ITestService);
+    // const testProfiles = container.get<ITestProfileService>(ITestProfileService);
+    // const resultService = container.get<ITestResultService>(ITestResultService);
     const testingMain = new TestingMainImpl(rpc, container);
     rpc.set(PLUGIN_RPC_CONTEXT.TESTING_MAIN, testingMain);
 }

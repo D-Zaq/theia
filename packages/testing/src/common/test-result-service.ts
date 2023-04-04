@@ -28,12 +28,13 @@ import { once } from './test-service';
 import { Iterable } from '@theia/monaco-editor-core/esm/vs/base/common/iterator';
 import { generateUuid } from '@theia/core/lib/common/uuid';
 import { IContextKey, IContextKeyService } from '@theia/monaco-editor-core/esm/vs/platform/contextkey/common/contextkey';
-import { createDecorator } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
+// import { createDecorator } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
 import { ExtensionRunTestsRequest, ITestRunProfile, ResolvedTestRunRequest, TestResultItem, TestResultState } from './test-types';
 import { TestingContextKeys } from './testing-context-keys';
 import { ITestProfileService } from './test-profile-service';
 import { ITestResult, LiveTestResult, TestResultItemChange, TestResultItemChangeReason } from './test-result';
 import { ITestResultStorage, RETAIN_MAX_RESULTS } from './test-result-storage';
+import { injectable, inject } from '@theia/core/shared/inversify';
 
 export type ResultChangeEvent =
     | { completed: LiveTestResult }
@@ -95,8 +96,9 @@ export interface ITestResultService {
 export const isRunningTests = (service: ITestResultService) =>
     service.results.length > 0 && service.results[0].completedAt === undefined;
 
-export const ITestResultService = createDecorator<ITestResultService>('testResultService');
+export const ITestResultService = Symbol('ITestResultService');
 
+@injectable()
 export class TestResultService implements ITestResultService {
     declare _serviceBrand: undefined;
     private changeResultEmitter = new Emitter<ResultChangeEvent>();
@@ -132,9 +134,9 @@ export class TestResultService implements ITestResultService {
     protected readonly persistScheduler = new RunOnceScheduler(() => this.persistImmediately(), 500);
 
     constructor(
-        @IContextKeyService contextKeyService: IContextKeyService,
-        @ITestResultStorage private readonly storage: ITestResultStorage,
-        @ITestProfileService private readonly testProfiles: ITestProfileService,
+        @inject(IContextKeyService) contextKeyService: IContextKeyService,
+        @inject(ITestResultStorage) private readonly storage: ITestResultStorage,
+        private testProfiles: ITestProfileService,
     ) {
         this.isRunning = TestingContextKeys.isRunning.bindTo(contextKeyService);
         this.hasAnyResults = TestingContextKeys.hasAnyResults.bindTo(contextKeyService);

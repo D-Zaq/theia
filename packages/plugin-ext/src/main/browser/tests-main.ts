@@ -25,17 +25,21 @@
 
 import { VSBuffer } from '@theia/testing/lib/common/buffer';
 import { CancellationToken } from '@theia/core/lib/common/cancellation'; // TODO: Test-api: Verify compatibility of namespace
-import { Disposable, DisposableStore, IDisposable, MutableDisposable, toDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
+import { Disposable, DisposableStore, IDisposable, MutableDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import { revive } from '@theia/monaco-editor-core/esm/vs/base/common/marshalling';
 import { URI } from '@theia/monaco-editor-core/esm/vs/base/common/uri';
 import { Range } from '@theia/monaco-editor-core/esm/vs/editor/common/core/range';
 import { MutableObservableValue } from '@theia/testing/lib/common/observable-value'
 import { ExtensionRunTestsRequest, IFileCoverage, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp } from '@theia/testing/lib/common/test-types';
 import { TestCoverage } from '@theia/testing/lib/common/test-coverage'
-import { ITestProfileService } from '@theia/testing/lib/common/test-profile-service';
+import { TestProfileService } from '@theia/testing/lib/common/test-profile-service';
 import { LiveTestResult } from '@theia/testing/lib/common/test-result';
-import { ITestResultService } from '@theia/testing/lib/common/test-result-service';
-import { IMainThreadTestController, ITestRootProvider, ITestService } from '@theia/testing/lib/common/test-service';
+import { TestResultService } from '@theia/testing/lib/common/test-result-service';
+import {
+    // ITestService,
+    IMainThreadTestController
+} from '@theia/testing/lib/common/test-service';
+import { TestService } from '@theia/testing/lib/common/test-service-impl';
 // import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 // import { ExtHostContext, ExtHostTestingShape, ILocationDto, ITestControllerPatch, MainContext, MainThreadTestingShape } from '../common/extHost.protocol';
 import { TestingExt, MAIN_RPC_CONTEXT, TestingMain, ITestControllerPatch } from '../../common/plugin-api-rpc';
@@ -44,7 +48,7 @@ import { RPCProtocol } from '../../common/rpc-protocol';
 import { interfaces } from '@theia/core/shared/inversify';
 
 // @extHostNamedCustomer(MainContext.MainThreadTesting)
-export class TestingMainImpl extends Disposable implements TestingMain, ITestRootProvider {
+export class TestingMainImpl extends Disposable implements TestingMain {
     private readonly proxy: TestingExt;
     private readonly diffListener = this._register(new MutableDisposable());
     private readonly testProviderRegistrations = new Map<string, {
@@ -53,24 +57,24 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
         canRefresh: MutableObservableValue<boolean>;
         disposable: IDisposable;
     }>();
-    private readonly testService: ITestService;
-    private readonly testProfiles: ITestProfileService;
-    private readonly resultService: ITestResultService;
+    private readonly testService: TestService;
+    private readonly testProfiles: TestProfileService;
+    private readonly resultService: TestResultService;
 
     constructor(
         // extHostContext: IExtHostContext,
         rpc: RPCProtocol,
-        // @ITestService private readonly testService: ITestService,
-        // @ITestProfileService private readonly testProfiles: ITestProfileService,
-        // @ITestResultService private readonly resultService: ITestResultService,
+        // private readonly testService: ITestService,
+        // private readonly testProfiles: ITestProfileService,
+        // private readonly resultService: ITestResultService
         container: interfaces.Container
     ) {
         super();
 
         this.proxy = rpc.getProxy(MAIN_RPC_CONTEXT.TESTING_EXT);
-        this.testService = container.get(ITestService);
-        this.testProfiles = container.get(ITestProfileService);
-        this.resultService = container.get(ITestResultService);
+        this.testService = container.get(TestService);
+        this.testProfiles = container.get(TestProfileService);
+        this.resultService = container.get(TestResultService);
 
         this._register(this.testService.onDidCancelTestRun(({ runId }) => {
             this.proxy.$cancelExtensionTestRun(runId);
@@ -99,14 +103,14 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
      * @inheritdoc
      */
     $updateTestRunConfig(controllerId: string, profileId: number, update: Partial<ITestRunProfile>): void {
-        this.testProfiles.updateProfile(controllerId, profileId, update);
+        // this.testProfiles.updateProfile(controllerId, profileId, update);
     }
 
     /**
      * @inheritdoc
      */
     $removeTestProfile(controllerId: string, profileId: number): void {
-        this.testProfiles.removeProfile(controllerId, profileId);
+        // this.testProfiles.removeProfile(controllerId, profileId);
     }
 
     /**
@@ -137,7 +141,7 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
      * @inheritdoc
      */
     $startedExtensionTestRun(req: ExtensionRunTestsRequest): void {
-        this.resultService.createLiveResult(req);
+        // this.resultService.createLiveResult(req);
     }
 
     /**
@@ -185,12 +189,12 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
      * @inheritdoc
      */
     public $appendTestMessagesInRun(runId: string, taskId: string, testId: string, messages: ITestMessage.Serialized[]): void {
-        const r = this.resultService.getResult(runId);
-        if (r && r instanceof LiveTestResult) {
-            for (const message of messages) {
-                r.appendMessage(testId, taskId, ITestMessage.deserialize(message));
-            }
-        }
+        // const r = this.resultService.getResult(runId);
+        // if (r && r instanceof LiveTestResult) {
+        //     for (const message of messages) {
+        //         r.appendMessage(testId, taskId, ITestMessage.deserialize(message));
+        //     }
+        // }
     }
 
     /**
@@ -210,8 +214,8 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
             expandTest: (testId, levels) => this.proxy.$expandTest(testId, isFinite(levels) ? levels : -1),
         };
 
-        disposable.add(toDisposable(() => this.testProfiles.removeProfile(controllerId)));
-        disposable.add(this.testService.registerTestController(controllerId, controller));
+        // disposable.add(toDisposable(() => this.testProfiles.removeProfile(controllerId)));
+        // disposable.add(this.testService.registerTestController(controllerId, controller));
 
         this.testProviderRegistrations.set(controllerId, {
             instance: controller,
@@ -251,8 +255,8 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
      * @inheritdoc
      */
     public $subscribeToDiffs(): void {
-        this.proxy.$acceptDiff(this.testService.collection.getReviverDiff().map(TestsDiffOp.serialize));
-        this.diffListener.value = this.testService.onDidProcessDiff(this.proxy.$acceptDiff, this.proxy);
+        // this.proxy.$acceptDiff(this.testService.collection.getReviverDiff().map(TestsDiffOp.serialize));
+        // this.diffListener.value = this.testService.onDidProcessDiff(this.proxy.$acceptDiff, this.proxy);
     }
 
     /**
@@ -266,12 +270,13 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
      * @inheritdoc
      */
     public $publishDiff(controllerId: string, diff: TestsDiffOp.Serialized[]): void {
-        this.testService.publishDiff(controllerId, diff.map(TestsDiffOp.deserialize));
+        // this.testService.publishDiff(controllerId, diff.map(TestsDiffOp.deserialize));
     }
 
     public async $runTests(req: ResolvedTestRunRequest, token: CancellationToken): Promise<string> {
-        const result = await this.testService.runResolvedTests(req, token);
-        return result.id;
+        // const result = await this.testService.runResolvedTests(req, token);
+        // return result.id;
+        return '';
     }
 
     public override dispose() {
@@ -283,7 +288,8 @@ export class TestingMainImpl extends Disposable implements TestingMain, ITestRoo
     }
 
     private withLiveRun<T>(runId: string, fn: (run: LiveTestResult) => T): T | undefined {
-        const r = this.resultService.getResult(runId);
-        return r && r instanceof LiveTestResult ? fn(r) : undefined;
+        // const r = this.resultService.getResult(runId);
+        // return r && r instanceof LiveTestResult ? fn(r) : undefined;
+        return undefined;
     }
 }

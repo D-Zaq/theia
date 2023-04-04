@@ -927,8 +927,26 @@ export function createAPIFactory(
         // Tests API (@stubbed)
         // The following implementation is temporarily `@stubbed` and marked as such under `theia.d.ts`
         const tests: typeof theia.tests = {
-            createTestController(provider: string, label: string, refreshHandler?: (token: theia.CancellationToken) => Thenable<void> | void) {
-                return testingExt.createTestController(provider, label, refreshHandler);
+            // createTestController(provider: string, label: string, refreshHandler?: (token: theia.CancellationToken) => Thenable<void> | void) {
+            //     return testingExt.createTestController(provider, label, refreshHandler);
+            // },
+            createTestController(
+                provider,
+                controllerLabel: string,
+                refreshHandler?: (
+                    token: theia.CancellationToken
+                ) => Thenable<void> | void
+            ) {
+                return {
+                    id: provider,
+                    label: controllerLabel,
+                    items: testItemCollection,
+                    refreshHandler,
+                    createRunProfile,
+                    createTestRun,
+                    createTestItem,
+                    dispose: () => undefined,
+                };
             },
             createTestObserver() {
                 return testingExt.createTestObserver();

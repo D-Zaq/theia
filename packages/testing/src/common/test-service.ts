@@ -29,7 +29,7 @@ import { Iterable } from '@theia/monaco-editor-core/esm/vs/base/common/iterator'
 import { IDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import { MarshalledId } from './marshalling-ids';
 import { URI } from '@theia/monaco-editor-core/esm/vs/base/common/uri';
-import { createDecorator } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
+// import { createDecorator } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
 import { IUriIdentityService } from '@theia/monaco-editor-core/esm/vs/platform/uriIdentity/common/uriIdentity';
 import { IObservableValue, MutableObservableValue } from './observable-value';
 import {
@@ -48,7 +48,7 @@ import { TestExclusions } from './test-exclusions';
 import { TestId } from './test-id';
 import { ITestResult } from './test-result';
 
-export const ITestService = createDecorator<ITestService>('testService');
+export const ITestService = Symbol('ITestService');
 
 export interface IMainThreadTestController {
     readonly id: string;

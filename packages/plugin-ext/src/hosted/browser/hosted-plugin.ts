@@ -68,6 +68,9 @@ import { LanguageService } from '@theia/monaco-editor-core/esm/vs/editor/common/
 import { Measurement, Stopwatch } from '@theia/core/lib/common';
 import { Uint8ArrayReadBuffer, Uint8ArrayWriteBuffer } from '@theia/core/lib/common/message-rpc/uint8-array-message-buffer';
 import { BasicChannel } from '@theia/core/lib/common/message-rpc/channel';
+import { TestProfileService } from '@theia/testing/lib/common/test-profile-service';
+import { TestResultService } from '@theia/testing/lib/common/test-result-service';
+import { TestService } from '@theia/testing/lib/common/test-service-impl';
 
 export type PluginHost = 'frontend' | string;
 export type DebugActivationEvent = 'onDebugResolve' | 'onDebugInitialConfigurations' | 'onDebugAdapterProtocolTracker' | 'onDebugDynamicConfigurations';
@@ -162,6 +165,15 @@ export class HostedPluginSupport {
 
     @inject(Stopwatch)
     protected readonly stopwatch: Stopwatch;
+
+    @inject(TestService)
+    protected readonly testService: TestService;
+
+    @inject(TestResultService)
+    protected readonly testResultService: TestResultService;
+
+    @inject(TestProfileService)
+    protected readonly testProfileService: TestProfileService;
 
     protected theiaReadyPromise: Promise<any>;
 
