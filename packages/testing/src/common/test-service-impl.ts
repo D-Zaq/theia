@@ -25,7 +25,8 @@ import { groupBy } from '@theia/monaco-editor-core/esm/vs/base/common/arrays';
 import { CancellationToken, CancellationTokenSource } from '@theia/core/lib/common/cancellation';
 import { Emitter } from '@theia/monaco-editor-core/esm/vs/base/common/event';
 import { Iterable } from '@theia/monaco-editor-core/esm/vs/base/common/iterator';
-import { Disposable, DisposableStore, IDisposable, toDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
+import { DisposableStore, IDisposable, toDisposable, IDisposableTracker } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
+import * as disp from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import { localize } from '@theia/monaco-editor-core/esm/vs/nls';
 import { IContextKey, IContextKeyService } from '@theia/monaco-editor-core/esm/vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
@@ -49,8 +50,49 @@ import { AmbiguousRunTestsRequest, IMainThreadTestController, ITestService } fro
 import { isDefined } from '@theia/monaco-editor-core/esm/vs/base/common/types';
 import { inject, injectable } from '@theia/core/shared/inversify';
 
+let disposableTracker: IDisposableTracker | null = null;
+
+function setParentOfDisposable(child: IDisposable, parent: IDisposable | null): void {
+    disposableTracker?.setParent(child, parent);
+}
+
+function trackDisposable<T extends IDisposable>(x: T): T {
+    disposableTracker?.trackDisposable(x);
+    return x;
+}
+
+function markAsDisposed(disposable: IDisposable): void {
+    disposableTracker?.markAsDisposed(disposable);
+}
+
 @injectable()
-export class TestService extends Disposable implements ITestService {
+export abstract class Disposable2 implements disp.IDisposable {
+
+    static readonly None = Object.freeze<disp.IDisposable>({ dispose() { } });
+
+    protected readonly _store = new disp.DisposableStore();
+
+    constructor() {
+        trackDisposable(this);
+        setParentOfDisposable(this._store, this);
+    }
+
+    public dispose(): void {
+        markAsDisposed(this);
+
+        this._store.dispose();
+    }
+
+    protected _register<T extends IDisposable>(o: T): T {
+        if ((o as unknown as Disposable2) === this) {
+            throw new Error('Cannot register a disposable on itself!');
+        }
+        return this._store.add(o);
+    }
+}
+
+@injectable()
+export class TestService extends Disposable2 implements ITestService {
     declare readonly _serviceBrand: undefined;
     private testControllers = new Map<string, IMainThreadTestController>();
 
