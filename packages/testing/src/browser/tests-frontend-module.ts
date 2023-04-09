@@ -20,9 +20,13 @@ import './tasks-monaco-contribution';
 import { TestProfileService } from '../common/test-profile-service';
 import { TestResultService } from '../common/test-result-service';
 import { TestService } from '../common/test-service-impl';
+import { ContextKeyService, ContextKeyServiceDummyImpl } from '@theia/core/lib/browser/context-key-service';
 
 export default new ContainerModule(bind => {
     bind(TestService).toSelf().inSingletonScope();
     bind(TestProfileService).toSelf().inSingletonScope();
     bind(TestResultService).toSelf().inSingletonScope();
+
+    bind(ContextKeyService).to(ContextKeyServiceDummyImpl).inSingletonScope();
+    // bind(ContextKeyService).toSelf().inSingletonScope();
 });

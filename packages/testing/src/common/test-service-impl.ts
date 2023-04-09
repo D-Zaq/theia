@@ -28,7 +28,8 @@ import { Iterable } from '@theia/monaco-editor-core/esm/vs/base/common/iterator'
 import { DisposableStore, IDisposable, toDisposable, IDisposableTracker } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import * as disp from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
 import { localize } from '@theia/monaco-editor-core/esm/vs/nls';
-import { IContextKey, IContextKeyService } from '@theia/monaco-editor-core/esm/vs/platform/contextkey/common/contextkey';
+import { ContextKeyService, ContextKey } from '@theia/core/lib/browser/context-key-service';
+// import { IContextKey } from '@theia/monaco-editor-core/esm/vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from '@theia/monaco-editor-core/esm/vs/platform/instantiation/common/instantiation';
 import { INotificationService } from '@theia/monaco-editor-core/esm/vs/platform/notification/common/notification';
 import { IStorageService, StorageScope, StorageTarget } from '@theia/monaco-editor-core/esm/vs/platform/storage/common/storage';
@@ -39,7 +40,7 @@ import { StoredValue } from './stored-value';
 import { ResolvedTestRunRequest, TestDiffOpType, TestsDiff } from './test-types';
 import { TestExclusions } from './test-exclusions';
 import { TestId } from './test-id';
-import { TestingContextKeys } from './testing-context-keys';
+// import { TestingContextKeys } from './testing-context-keys';
 import { canUseProfileWithTest, ITestProfileService } from './test-profile-service';
 import { ITestResult } from './test-result';
 import { ITestResultService } from './test-result-service';
@@ -100,9 +101,9 @@ export class TestService extends Disposable2 implements ITestService {
     private readonly willProcessDiffEmitter = new Emitter<TestsDiff>();
     private readonly didProcessDiffEmitter = new Emitter<TestsDiff>();
     private readonly testRefreshCancellations = new Set<CancellationTokenSource>();
-    private readonly providerCount: IContextKey<number>;
-    private readonly canRefreshTests: IContextKey<boolean>;
-    private readonly isRefreshingTests: IContextKey<boolean>;
+    private readonly providerCount: ContextKey<number>;
+    private readonly canRefreshTests: ContextKey<boolean>;
+    private readonly isRefreshingTests: ContextKey<boolean>;
     /**
      * Cancellation for runs requested by the user being managed by the UI.
      * Test runs initiated by extensions are not included here.
@@ -143,8 +144,11 @@ export class TestService extends Disposable2 implements ITestService {
         target: StorageTarget.USER
     }, this.storage), true);
 
+    @inject(ContextKeyService)
+    protected readonly contextKeyService: ContextKeyService;
+
     constructor(
-        @inject(IContextKeyService) contextKeyService: IContextKeyService,
+        // @inject(ContextKeyService) contextKeyService: ContextKeyService,
         @inject(IInstantiationService) instantiationService: IInstantiationService,
         @inject(IStorageService) private readonly storage: IStorageService,
         // @IEditorService private readonly editorService: IEditorService,
@@ -155,10 +159,15 @@ export class TestService extends Disposable2 implements ITestService {
         @inject(IWorkspaceTrustRequestService) private readonly workspaceTrustRequestService: IWorkspaceTrustRequestService,
     ) {
         super();
+        // this.excluded = instantiationService.createInstance(TestExclusions);
         this.excluded = instantiationService.createInstance(TestExclusions);
-        this.providerCount = TestingContextKeys.providerCount.bindTo(contextKeyService);
-        this.canRefreshTests = TestingContextKeys.canRefreshTests.bindTo(contextKeyService);
-        this.isRefreshingTests = TestingContextKeys.isRefreshingTests.bindTo(contextKeyService);
+
+        this.providerCount = this.contextKeyService.createKey<number>('testing.providerCount', 0);
+        this.canRefreshTests = this.contextKeyService.createKey<boolean>('testing.canRefresh', false);
+        this.isRefreshingTests = this.contextKeyService.createKey<boolean>('testing.isRefreshing', false);
+        // this.providerCount = TestingContextKeys.providerCount.bindTo(contextKeyService);
+        // this.canRefreshTests = TestingContextKeys.canRefreshTests.bindTo(contextKeyService);
+        // this.isRefreshingTests = TestingContextKeys.isRefreshingTests.bindTo(contextKeyService);
     }
 
     /**
