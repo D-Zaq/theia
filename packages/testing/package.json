@@ -17,9 +17,7 @@
     "access": "public"
   },
   "theiaExtensions": [
-    {
-      "frontend": "lib/browser/tests-frontend-module"
-    }
+    {}
   ],
   "keywords": [
     "theia-extension"

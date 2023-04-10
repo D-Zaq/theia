@@ -25,21 +25,23 @@
 
 import { VSBuffer } from '@theia/testing/lib/common/buffer';
 import { CancellationToken } from '@theia/core/lib/common/cancellation'; // TODO: Test-api: Verify compatibility of namespace
-import { Disposable, DisposableStore, IDisposable, MutableDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
-import { revive } from '@theia/monaco-editor-core/esm/vs/base/common/marshalling';
-import { URI } from '@theia/monaco-editor-core/esm/vs/base/common/uri';
-import { Range } from '@theia/monaco-editor-core/esm/vs/editor/common/core/range';
+import { Disposable, IDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
+// import { Disposable, IDisposable, MutableDisposable } from '@theia/monaco-editor-core/esm/vs/base/common/lifecycle';
+// import { revive } from '@theia/monaco-editor-core/esm/vs/base/common/marshalling';
+// import { URI } from '@theia/monaco-editor-core/esm/vs/base/common/uri';
+// import { Range } from '@theia/monaco-editor-core/esm/vs/editor/common/core/range';
 import { MutableObservableValue } from '@theia/testing/lib/common/observable-value'
-import { ExtensionRunTestsRequest, IFileCoverage, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp } from '@theia/testing/lib/common/test-types';
-import { TestCoverage } from '@theia/testing/lib/common/test-coverage'
-import { TestProfileService } from '@theia/testing/lib/common/test-profile-service';
+import { ExtensionRunTestsRequest, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp } from '@theia/testing/lib/common/test-types';
+// import { ExtensionRunTestsRequest, IFileCoverage, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp } from '@theia/testing/lib/common/test-types';
+// import { TestCoverage } from '@theia/testing/lib/common/test-coverage'
+// import { TestProfileService } from '@theia/testing/lib/common/test-profile-service';
 import { LiveTestResult } from '@theia/testing/lib/common/test-result';
-import { TestResultService } from '@theia/testing/lib/common/test-result-service';
+// import { TestResultService } from '@theia/testing/lib/common/test-result-service';
 import {
     // ITestService,
     IMainThreadTestController
 } from '@theia/testing/lib/common/test-service';
-import { TestService } from '@theia/testing/lib/common/test-service-impl';
+// import { TestService } from '@theia/testing/lib/common/test-service-impl';
 // import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 // import { ExtHostContext, ExtHostTestingShape, ILocationDto, ITestControllerPatch, MainContext, MainThreadTestingShape } from '../common/extHost.protocol';
 import { TestingExt, MAIN_RPC_CONTEXT, TestingMain, ITestControllerPatch } from '../../common/plugin-api-rpc';
@@ -50,16 +52,16 @@ import { interfaces } from '@theia/core/shared/inversify';
 // @extHostNamedCustomer(MainContext.MainThreadTesting)
 export class TestingMainImpl extends Disposable implements TestingMain {
     private readonly proxy: TestingExt;
-    private readonly diffListener = this._register(new MutableDisposable());
+    // private readonly diffListener = this._register(new MutableDisposable());
     private readonly testProviderRegistrations = new Map<string, {
         instance: IMainThreadTestController;
         label: MutableObservableValue<string>;
         canRefresh: MutableObservableValue<boolean>;
         disposable: IDisposable;
     }>();
-    private readonly testService: TestService;
-    private readonly testProfiles: TestProfileService;
-    private readonly resultService: TestResultService;
+    // private readonly testService: TestService;
+    // private readonly testProfiles: TestProfileService;
+    // private readonly resultService: TestResultService;
 
     constructor(
         // extHostContext: IExtHostContext,
@@ -72,21 +74,22 @@ export class TestingMainImpl extends Disposable implements TestingMain {
         super();
 
         this.proxy = rpc.getProxy(MAIN_RPC_CONTEXT.TESTING_EXT);
-        this.testService = container.get(TestService);
-        this.testProfiles = container.get(TestProfileService);
-        this.resultService = container.get(TestResultService);
+        if (this.proxy) { console.log('proxy tests') }
+        // this.testService = container.get(TestService);
+        // this.testProfiles = container.get(TestProfileService);
+        // this.resultService = container.get(TestResultService);
 
-        this._register(this.testService.onDidCancelTestRun(({ runId }) => {
-            this.proxy.$cancelExtensionTestRun(runId);
-        }));
+        // this._register(this.testService.onDidCancelTestRun(({ runId }) => {
+        //     this.proxy.$cancelExtensionTestRun(runId);
+        // }));
 
-        this._register(this.resultService.onResultsChanged(evt => {
-            const results = 'completed' in evt ? evt.completed : ('inserted' in evt ? evt.inserted : undefined);
-            const serialized = results?.toJSON();
-            if (serialized) {
-                this.proxy.$publishTestResults([serialized]);
-            }
-        }));
+        // this._register(this.resultService.onResultsChanged(evt => {
+        //     const results = 'completed' in evt ? evt.completed : ('inserted' in evt ? evt.inserted : undefined);
+        //     const serialized = results?.toJSON();
+        //     if (serialized) {
+        //         this.proxy.$publishTestResults([serialized]);
+        //     }
+        // }));
     }
 
     /**
@@ -95,7 +98,7 @@ export class TestingMainImpl extends Disposable implements TestingMain {
     $publishTestRunProfile(profile: ITestRunProfile): void {
         const controller = this.testProviderRegistrations.get(profile.controllerId);
         if (controller) {
-            this.testProfiles.addProfile(controller.instance, profile);
+            // this.testProfiles.addProfile(controller.instance, profile);
         }
     }
 
@@ -124,17 +127,17 @@ export class TestingMainImpl extends Disposable implements TestingMain {
      * @inheritdoc
      */
     $signalCoverageAvailable(runId: string, taskId: string): void {
-        this.withLiveRun(runId, run => {
-            const task = run.tasks.find(t => t.id === taskId);
-            if (!task) {
-                return;
-            }
+        // this.withLiveRun(runId, run => {
+        //     const task = run.tasks.find(t => t.id === taskId);
+        //     if (!task) {
+        //         return;
+        //     }
 
-            (task.coverage as MutableObservableValue<TestCoverage>).value = new TestCoverage({
-                provideFileCoverage: async token => revive<IFileCoverage[]>(await this.proxy.$provideFileCoverage(runId, taskId, token)),
-                resolveFileCoverage: (i, token) => this.proxy.$resolveFileCoverage(runId, taskId, i, token),
-            });
-        });
+        //     (task.coverage as MutableObservableValue<TestCoverage>).value = new TestCoverage({
+        //         provideFileCoverage: async token => revive<IFileCoverage[]>(await this.proxy.$provideFileCoverage(runId, taskId, token)),
+        //         resolveFileCoverage: (i, token) => this.proxy.$resolveFileCoverage(runId, taskId, i, token),
+        //     });
+        // });
     }
 
     /**
@@ -148,40 +151,40 @@ export class TestingMainImpl extends Disposable implements TestingMain {
      * @inheritdoc
      */
     $startedTestRunTask(runId: string, task: ITestRunTask): void {
-        this.withLiveRun(runId, r => r.addTask(task));
+        // this.withLiveRun(runId, r => r.addTask(task));
     }
 
     /**
      * @inheritdoc
      */
     $finishedTestRunTask(runId: string, taskId: string): void {
-        this.withLiveRun(runId, r => r.markTaskComplete(taskId));
+        // this.withLiveRun(runId, r => r.markTaskComplete(taskId));
     }
 
     /**
      * @inheritdoc
      */
     $finishedExtensionTestRun(runId: string): void {
-        this.withLiveRun(runId, r => r.markComplete());
+        // this.withLiveRun(runId, r => r.markComplete());
     }
 
     /**
      * @inheritdoc
      */
     public $updateTestStateInRun(runId: string, taskId: string, testId: string, state: TestResultState, duration?: number): void {
-        this.withLiveRun(runId, r => r.updateState(testId, taskId, state, duration));
+        // this.withLiveRun(runId, r => r.updateState(testId, taskId, state, duration));
     }
 
     /**
      * @inheritdoc
      */
     public $appendOutputToRun(runId: string, taskId: string, output: VSBuffer, locationDto?: Location, testId?: string): void {
-        const location = locationDto && {
-            uri: URI.revive(locationDto.uri),
-            range: Range.lift(locationDto.range)
-        };
+        // const location = locationDto && {
+        //     uri: URI.revive(locationDto.uri),
+        //     range: Range.lift(locationDto.range)
+        // };
 
-        this.withLiveRun(runId, r => r.appendOutput(output, taskId, location, testId));
+        // this.withLiveRun(runId, r => r.appendOutput(output, taskId, location, testId));
     }
 
 
@@ -201,54 +204,54 @@ export class TestingMainImpl extends Disposable implements TestingMain {
      * @inheritdoc
      */
     public $registerTestController(controllerId: string, labelStr: string, canRefreshValue: boolean) {
-        const disposable = new DisposableStore();
-        const label = disposable.add(new MutableObservableValue(labelStr));
-        const canRefresh = disposable.add(new MutableObservableValue(canRefreshValue));
-        const controller: IMainThreadTestController = {
-            id: controllerId,
-            label,
-            canRefresh,
-            refreshTests: token => this.proxy.$refreshTests(controllerId, token),
-            configureRunProfile: id => this.proxy.$configureRunProfile(controllerId, id),
-            runTests: (reqs, token) => this.proxy.$runControllerTests(reqs, token),
-            expandTest: (testId, levels) => this.proxy.$expandTest(testId, isFinite(levels) ? levels : -1),
-        };
+        // const disposable = new DisposableStore();
+        // const label = disposable.add(new MutableObservableValue(labelStr));
+        // const canRefresh = disposable.add(new MutableObservableValue(canRefreshValue));
+        // const controller: IMainThreadTestController = {
+        //     id: controllerId,
+        //     label,
+        //     canRefresh,
+        //     refreshTests: token => this.proxy.$refreshTests(controllerId, token),
+        //     configureRunProfile: id => this.proxy.$configureRunProfile(controllerId, id),
+        //     runTests: (reqs, token) => this.proxy.$runControllerTests(reqs, token),
+        //     expandTest: (testId, levels) => this.proxy.$expandTest(testId, isFinite(levels) ? levels : -1),
+        // };
 
-        // disposable.add(toDisposable(() => this.testProfiles.removeProfile(controllerId)));
-        // disposable.add(this.testService.registerTestController(controllerId, controller));
+        // // disposable.add(toDisposable(() => this.testProfiles.removeProfile(controllerId)));
+        // // disposable.add(this.testService.registerTestController(controllerId, controller));
 
-        this.testProviderRegistrations.set(controllerId, {
-            instance: controller,
-            label,
-            canRefresh,
-            disposable
-        });
+        // this.testProviderRegistrations.set(controllerId, {
+        //     instance: controller,
+        //     label,
+        //     canRefresh,
+        //     disposable
+        // });
     }
 
     /**
      * @inheritdoc
      */
     public $updateController(controllerId: string, patch: ITestControllerPatch) {
-        const controller = this.testProviderRegistrations.get(controllerId);
-        if (!controller) {
-            return;
-        }
+        // const controller = this.testProviderRegistrations.get(controllerId);
+        // if (!controller) {
+        //     return;
+        // }
 
-        if (patch.label !== undefined) {
-            controller.label.value = patch.label;
-        }
+        // if (patch.label !== undefined) {
+        //     controller.label.value = patch.label;
+        // }
 
-        if (patch.canRefresh !== undefined) {
-            controller.canRefresh.value = patch.canRefresh;
-        }
+        // if (patch.canRefresh !== undefined) {
+        //     controller.canRefresh.value = patch.canRefresh;
+        // }
     }
 
     /**
      * @inheritdoc
      */
     public $unregisterTestController(controllerId: string) {
-        this.testProviderRegistrations.get(controllerId)?.disposable.dispose();
-        this.testProviderRegistrations.delete(controllerId);
+        // this.testProviderRegistrations.get(controllerId)?.disposable.dispose();
+        // this.testProviderRegistrations.delete(controllerId);
     }
 
     /**
@@ -263,7 +266,7 @@ export class TestingMainImpl extends Disposable implements TestingMain {
      * @inheritdoc
      */
     public $unsubscribeFromDiffs(): void {
-        this.diffListener.clear();
+        // this.diffListener.clear();
     }
 
     /**
@@ -281,10 +284,10 @@ export class TestingMainImpl extends Disposable implements TestingMain {
 
     public override dispose() {
         super.dispose();
-        for (const subscription of this.testProviderRegistrations.values()) {
-            subscription.disposable.dispose();
-        }
-        this.testProviderRegistrations.clear();
+        // for (const subscription of this.testProviderRegistrations.values()) {
+        //     subscription.disposable.dispose();
+        // }
+        // this.testProviderRegistrations.clear();
     }
 
     private withLiveRun<T>(runId: string, fn: (run: LiveTestResult) => T): T | undefined {

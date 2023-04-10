@@ -103,6 +103,7 @@ export class TestingExtImpl implements TestingExt {
         if (this.controllers.has(controllerId)) {
             throw new Error(`Attempt to insert a duplicate controller with ID "${controllerId}"`);
         }
+        console.log("Poking The Tests API from students' team. Args: controllerId: ", controllerId, " label:", label); // TESTS API: TODO: Remove
 
         const disposable = new DisposableStore();
         const collection = disposable.add(new ExtHostTestItemCollection(controllerId, label, this.editors));

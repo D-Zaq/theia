@@ -225,12 +225,12 @@ import { ClipboardExt } from './clipboard-ext';
 import { WebviewsExtImpl } from './webviews';
 import { ExtHostFileSystemEventService } from './file-system-event-service-ext-impl';
 import { LabelServiceExtImpl } from '../plugin/label-service';
-import {
-    createRunProfile,
-    createTestRun,
-    testItemCollection,
-    createTestItem
-} from './stubs/tests-api';
+// import {
+//     createRunProfile,
+//     createTestRun,
+//     testItemCollection,
+//     createTestItem
+// } from './stubs/tests-api';
 import { TimelineExtImpl } from './timeline';
 import { ThemingExtImpl } from './theming';
 import { CommentsExtImpl } from './comments';
@@ -927,26 +927,8 @@ export function createAPIFactory(
         // Tests API (@stubbed)
         // The following implementation is temporarily `@stubbed` and marked as such under `theia.d.ts`
         const tests: typeof theia.tests = {
-            // createTestController(provider: string, label: string, refreshHandler?: (token: theia.CancellationToken) => Thenable<void> | void) {
-            //     return testingExt.createTestController(provider, label, refreshHandler);
-            // },
-            createTestController(
-                provider,
-                controllerLabel: string,
-                refreshHandler?: (
-                    token: theia.CancellationToken
-                ) => Thenable<void> | void
-            ) {
-                return {
-                    id: provider,
-                    label: controllerLabel,
-                    items: testItemCollection,
-                    refreshHandler,
-                    createRunProfile,
-                    createTestRun,
-                    createTestItem,
-                    dispose: () => undefined,
-                };
+            createTestController(provider: string, label: string, refreshHandler?: (token: theia.CancellationToken) => Thenable<void> | void) {
+                return testingExt.createTestController(provider, label, refreshHandler);
             },
             createTestObserver() {
                 return testingExt.createTestObserver();
